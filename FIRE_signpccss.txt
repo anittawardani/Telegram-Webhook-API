@@ -1,0 +1,50 @@
+include "config/koneksi.php";
+
+$data = $_GET['data'];
+$act = $_GET['act'];
+
+if ($act == 'add' && $data == 'student') {
+
+    $insert_student = mysqli_query($koneksi, "INSERT INTO 
+            student(name,id_telegram) 
+            VALUES('$_GET[name]','$_GET[id_telegram]')");
+
+    if ($insert_student) {
+        $get_student = mysqli_query($koneksi, "SELECT * FROM student
+                WHERE id_telegram ='$_GET[id_telegram]'");
+
+        $r = mysqli_fetch_array($get_student);
+
+        $id_student = $r['id_student'];
+        $password = md5($_GET['password']);
+
+        $insert_user = mysqli_query($koneksi, "INSERT INTO
+                user(username,password,id_student) 
+                VALUES('$_GET[username]','$password','$id_student')");
+
+        if ($insert_user) {
+
+            $get_data = mysqli_query($koneksi, "SELECT * FROM student 
+                    JOIN user ON student.id_student=user.id_student 
+                    WHERE student.id_telegram ='$_GET[id_telegram]'");
+
+            $return_data['status'] = TRUE;
+            $return_data['message'] = 'Berhasil Simpan';
+            $return_data['data'] = mysqli_fetch_object($get_data);
+
+            echo json_encode($return_data);
+        } else {
+
+            mysqli_query($koneksi, "DELETE FROM student 
+                    WHERE id_telegram='$_GET[id_telegram]'");
+
+            $return_data['status'] = FALSE;
+            $return_data['message'] = 'Gagal Simpan Username';
+            echo json_encode($return_data);
+        }
+    } else {
+        $return_data['status'] = FALSE;
+        $return_data['message'] = 'Gagal Simpan Id Telegram';
+        echo json_encode($return_data);
+    }
+}

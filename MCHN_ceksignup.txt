@@ -1,0 +1,25 @@
+$token = "bot" . "762852106:AAGeM6VBGyFF3bBKUZCnYy8Sk2KTyEI-z3U";
+
+$updates = file_get_contents("php://input");
+$updates = json_decode($updates, true);
+
+$message = $updates[message][text];
+$name = $updates[message][chat][first_name];
+$username = $updates[message][chat][username];
+$telegram_id = $updates[message][chat][id];
+
+$sudah_sign_up = file_get_contents("http://localhost/fist_schedule_assistant/api.php?act=check&data=student&id_telegram=$telegram_id");
+$sudah_sign_up = json_decode($sudah_sign_up, TRUE);
+
+if ($sudah_sign_up[status]) {
+    if ($message == "check me") {
+        $gabungan = urlencode("nama anda : $name\nusername anda : $username\nid telegram anda $telegram_id");
+        file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$gabungan");
+    }else {
+        $text = "Perintah tidak valid !!";
+        file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$text");
+    }
+} else {
+    $text = urlencode("Anda harus sign up terlebih dahulu !!!\n\nSilahkan ketikan\ndaftar\nuntuk sign up.");
+    file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$text");
+}

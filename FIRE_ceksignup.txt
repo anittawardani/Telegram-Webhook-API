@@ -1,0 +1,13 @@
+if ($act == 'check' && $data == 'student') {
+
+    $get_data = mysqli_query($koneksi, "SELECT * FROM student 
+                    JOIN user ON student.id_student=user.id_student 
+                    WHERE student.id_telegram ='$_GET[id_telegram]'");
+
+    if(mysqli_num_rows($get_data) == 0){
+            $return_data['status'] = FALSE;
+    }else{
+            $return_data['status'] = TRUE;        
+    }
+    echo json_encode($return_data);
+}

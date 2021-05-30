@@ -1,0 +1,49 @@
+if ($act == 'get' && $data == 'college_schedule') {
+    $return_data['data'] = array();
+    if (!empty($_GET['id_telegram'])) {
+        if (!empty($_GET['day'])) {
+            $get_data = mysqli_query($koneksi, "SELECT * FROM college_schedule JOIN student ON student.id_student=college_schedule.id_student WHERE student.id_telegram ='$_GET[id_telegram]' AND college_schedule.day='$_GET[day]'");
+
+
+            while ($r = mysqli_fetch_assoc($get_data)) {
+                array_push($return_data['data'], $r);
+            }
+
+            if (count($return_data['data']) != 0) {
+                $return_data['status'] = TRUE;
+            } else {
+                $return_data['status'] = FALSE;
+            }
+
+//            echo json_encode($return_data);
+//            echo "<br>array<br><pre>";
+//            print_r($return_data);
+//            $text = "";
+//            foreach ($return_data['data'] as $value) {
+//                $text .= "$value[day]  $value[time]  :  $value[subject] \n";
+//            }
+//            echo $text;
+        } else {
+            $get_data = mysqli_query($koneksi, "SELECT * FROM college_schedule JOIN student ON student.id_student=college_schedule.id_student WHERE student.id_telegram ='$_GET[id_telegram]'");
+
+            $return_data['data'] = array();
+            while ($r = mysqli_fetch_assoc($get_data)) {
+                array_push($return_data['data'], $r);
+            }
+
+            if (count($return_data['data']) != 0) {
+                $return_data['status'] = TRUE;
+            } else {
+                $return_data['status'] = FALSE;
+            }
+
+//            echo json_encode($return_data);
+        }
+        echo json_encode($return_data);
+    } else {
+        $return_data['status'] = FALSE;
+
+        $return_data['message'] = 'BAD Request';
+        echo json_encode($return_data);
+    }
+}

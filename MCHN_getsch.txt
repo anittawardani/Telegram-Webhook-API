@@ -1,0 +1,29 @@
+if ($message == "all") {
+        $my_api_resp = file_get_contents("http://localhost/fist_schedule_assistant/api.php?act=get&data=college_schedule&id_telegram=$telegram_id");
+        $my_api_resp = json_decode($my_api_resp, TRUE);
+        if ($my_api_resp[status]) {
+            $text = "";
+            foreach ($my_api_resp['data'] as $value) {
+                $text .= "$value[day]  $value[time]  :  $value[subject] \n";
+            }
+            $info = urlencode($text);
+            file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$info");
+        } else {
+            $text = "Data kosong atau tidak valid !!";
+            file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$text");
+        }
+    } elseif ($message == 'senin' || $message == 'selasa' || $message == 'rabu' || $message == 'kamis' || $message == 'jumat') {
+        $my_api_resp = file_get_contents("http://localhost/fist_schedule_assistant/api.php?act=get&data=college_schedule&id_telegram=$telegram_id&day=$message");
+        $my_api_resp = json_decode($my_api_resp, TRUE);
+        if ($my_api_resp[status]) {
+            $text = "";
+            foreach ($my_api_resp['data'] as $value) {
+                $text .= "$value[day]  $value[time]  :  $value[subject] \n";
+            }
+            $info = urlencode($text);
+            file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$info");
+        } else {
+            $text = "Data kosong atau tidak valid !!";
+            file_get_contents("https://api.telegram.org/$token/sendMessage?parse_mode=html&chat_id=$telegram_id&text=$text");
+        }
+    }
